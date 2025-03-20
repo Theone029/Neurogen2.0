@@ -1,0 +1,14 @@
+nohup: ignoring input
+ERROR:root:Error creating connection pool: connection to server at "localhost" (::1), port 5432 failed: FATAL:  database "memory_bank" does not exist
+
+Traceback (most recent call last):
+  File "/home/assistant/neurogen/mainmemory.py", line 73, in <module>
+    pool = SimpleConnectionPool(minconn=1, maxconn=10, **DB_CONFIG)
+  File "/home/assistant/.local/lib/python3.10/site-packages/psycopg2/pool.py", line 59, in __init__
+    self._connect()
+  File "/home/assistant/.local/lib/python3.10/site-packages/psycopg2/pool.py", line 63, in _connect
+    conn = psycopg2.connect(*self._args, **self._kwargs)
+  File "/home/assistant/.local/lib/python3.10/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at "localhost" (::1), port 5432 failed: FATAL:  database "memory_bank" does not exist
+

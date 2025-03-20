@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+psycopg2-binary
+python-dotenv
+openai
+numpy
+prometheus_client
+slowapi
+streamlit
+requests

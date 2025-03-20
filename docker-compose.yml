@@ -1,0 +1,20 @@
+version: '3'
+services:
+  automation:
+    build: .
+    command: python3 automation_scheduler.py
+    ports:
+      - "5002:5002"
+  dashboard:
+    build: .
+    command: python3 lead_dashboard.py
+    ports:
+      - "5000:5000"
+  webhook:
+    build: .
+    command: python3 webhook_listener.py
+    ports:
+      - "5001:5001"
+  notifier:
+    build: .
+    command: python3 notifier_bot.py

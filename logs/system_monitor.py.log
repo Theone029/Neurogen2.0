@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/home/assistant/neurogen/system_monitor.py", line 5, in <module>
+    if script_name in ' '.join(proc.info.get('cmdline', [])) and proc.info['pid'] != os.getpid():
+TypeError: can only join an iterable
