@@ -1,0 +1,10 @@
+Deleted existing bot.py
+Failed to self-save script: [Errno 2] No such file or directory: '/home/assistant/neurogen/bot.py'
+Traceback (most recent call last):
+  File "/home/assistant/neurogen/bot.py", line 31, in <module>
+  File "/home/assistant/.local/lib/python3.10/site-packages/dotenv/main.py", line 346, in load_dotenv
+    dotenv_path = find_dotenv()
+  File "/home/assistant/.local/lib/python3.10/site-packages/dotenv/main.py", line 305, in find_dotenv
+    assert frame.f_back is not None
+AssertionError
+SyntaxError: Non-UTF-8 code starting with '\xb7' in file /home/assistant/neurogen/bot.py on line 19, but no encoding declared; see https://python.org/dev/peps/pep-0263/ for details

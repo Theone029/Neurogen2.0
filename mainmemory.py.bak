@@ -84,7 +84,7 @@ app = FastAPI(
 @app.middleware("http")
 async def add_rate_limit(request: Request, call_next):
     request_counter.inc()
-    response = await limiter.limit("10/minute")(call_next)(request)
+    response = await limiter.limit("100/minute")(call_next)(request)
     return response
 
 @app.get("/metrics")
@@ -149,7 +149,7 @@ def semantic_recall(query: str, project: str, limit: int = 3):
         with db_connection() as conn:
             with conn.cursor(cursor_factory=DictCursor) as cur:
                 cur.execute(
-                    "SELECT content FROM memories ORDER BY embedding <=> %s LIMIT %s;",
+                    "SELECT content FROM memories ORDER BY embedding <=> %s::vector LIMIT %s;",
                     (np.array(q_embedding).tolist(), limit)
                 )
                 rows = cur.fetchall()
