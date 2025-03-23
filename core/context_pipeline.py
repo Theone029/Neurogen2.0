@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/env python3
 import sys, os
-# Bootstrap: add root directory to Python path for proper module imports.
+# Bootstrap: add the root directory to Python path for proper module imports.
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from memory_synthesizer import MemorySynthesizer
@@ -26,7 +27,7 @@ def build_context(query: str, limit: int = 5) -> str:
 # --- Self-Test Stub ---
 def test_context_pipeline():
     print("\n--- Running Self-Test for Context Pipeline ---\n")
-    query = "Optimize memory injection and reduce GPT token waste."
+    query = "recursive intelligence"
     context = build_context(query)
     print("Context built:")
     print(context)
@@ -37,5 +38,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "test":
         test_context_pipeline()
     else:
-        # Default action: print context for a sample query.
-        print(build_context("Optimize memory injection and reduce GPT token waste."))
+        print(build_context("recursive intelligence"))

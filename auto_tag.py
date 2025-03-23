@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 auto_tag.py
 
@@ -23,6 +24,11 @@ class AutoTag:
             "inject": "logic",
             "success": "achievement",
             "deploy": "deployment",
+            "recursive": "recursive",
+            "intelligence": "intelligence",
+            "context": "context",
+            "evolution": "evolution",
+            "architecture": "architecture"
         }
 
     def generate(self, text: str) -> list:
@@ -46,6 +52,7 @@ def test_auto_tag():
         "Successful test run leads to a successful deploy!",
         "Time to refactor and optimize the memory synthesizer.",
         "No issues here, just pure success.",
+        "Recursive intelligence in context is key for evolution."
     ]
     for i, test in enumerate(tests, 1):
         print(f"\n[TEST {i}] Input: {test}")

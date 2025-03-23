@@ -35,3 +35,8 @@ A	core/bot.py
 M	logs/bot.log
 M	logs/commits.md
 M	memory_store.py
+
+## [2025-03-23 22:19:54] ´§âœ… MemoryRouter created and tested: full routing live
+
+A	core/memory_router.py
+M	logs/commits.md
