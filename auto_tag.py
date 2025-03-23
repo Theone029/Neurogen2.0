@@ -11,68 +11,49 @@ import re
 
 class AutoTag:
     def __init__(self, keyword_tags=None):
-        """
-        Initialize AutoTag with an optional mapping of keywords to tags.
-        Args:
-            keyword_tags (dict): Mapping where keys are keywords (str) and values are tags (str or list of str).
-        """
-        # Default keyword-to-tag mapping—customize as needed.
-        if keyword_tags is None:
-            keyword_tags = {
-                "error": "bug",
-                "fail": "bug",
-                "success": "achievement",
-                "optimize": "performance",
-                "deploy": "deployment",
-                "test": "testing",
-                "debug": "debugging",
-                "refactor": "maintenance",
-                "memory": "data",
-                "synthesizer": "logic",
-            }
-        self.keyword_tags = keyword_tags
+        self.keyword_tags = keyword_tags or {
+            "error": "debugging",
+            "debug": "debugging",
+            "fix": "debugging",
+            "fail": "bug",
+            "test": "testing",
+            "optimize": "performance",
+            "refactor": "maintenance",
+            "memory": "data",
+            "inject": "logic",
+            "success": "achievement",
+            "deploy": "deployment",
+        }
 
-    def generate_tags(self, text):
-        """
-        Analyze the text and generate a list of tags.
-        Args:
-            text (str): The content to analyze.
-        Returns:
-            list: A list of unique tags found in the text.
-        """
-        text_lower = text.lower()
-        found_tags = set()
-        for keyword, tag in self.keyword_tags.items():
-            # Use word boundaries to ensure we match whole words
-            if re.search(r"\b" + re.escape(keyword) + r"\b", text_lower):
-                if isinstance(tag, list):
-                    found_tags.update(tag)
-                else:
-                    found_tags.add(tag)
-        return list(found_tags)
+    def generate(self, text: str) -> list:
+        tags = set()
+        for word in text.lower().split():
+            for k, v in self.keyword_tags.items():
+                if k in word:
+                    if isinstance(v, list):
+                        tags.update(v)
+                    else:
+                        tags.add(v)
+        return list(tags or {"misc"})
 
-# Self-Test Stub
+def generate_tags(text: str) -> list:
+    return AutoTag().generate(text)
+
 def test_auto_tag():
-    print("\n--- Running Self-Test for AutoTag ---\n")
-    auto_tagger = AutoTag()
-    
-    test_inputs = [
+    print("\n--- Running Self-Test for AutoTag ---")
+    tests = [
         "We encountered an error during deployment. Debug the code.",
         "Successful test run leads to a successful deploy!",
         "Time to refactor and optimize the memory synthesizer.",
-        "No issues here, just pure success."
+        "No issues here, just pure success.",
     ]
-    
-    for idx, text in enumerate(test_inputs, 1):
-        tags = auto_tagger.generate_tags(text)
-        print(f"[TEST {idx}] Input: {text}")
-        print(f"Generated Tags: {tags}\n")
-
-    print("--- AutoTag Self-Test Completed ---\n")
+    for i, test in enumerate(tests, 1):
+        print(f"\n[TEST {i}] Input: {test}")
+        tags = generate_tags(test)
+        print(f"Generated Tags: {tags}")
+    print("\n--- AutoTag Self-Test Completed ---")
 
 if __name__ == "__main__":
     import sys
     if len(sys.argv) > 1 and sys.argv[1] == "test":
         test_auto_tag()
-    else:
-        print("AutoTag module loaded. To run the self-test, execute:\n  python3 auto_tag.py test")
