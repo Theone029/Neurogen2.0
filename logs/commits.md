@@ -26,3 +26,12 @@ A	core/__pycache__/distill.cpython-310.pyc
 A	core/__pycache__/memory_synthesizer.cpython-310.pyc
 A	core/context_pipeline.py
 M	logs/commits.md
+
+## [2025-03-23 22:14:27] ´§í Added 'source' parameter support to MemoryStore + validated successful insert
+
+M	__pycache__/memory_store.cpython-310.pyc
+A	core/__pycache__/context_pipeline.cpython-310.pyc
+A	core/bot.py
+M	logs/bot.log
+M	logs/commits.md
+M	memory_store.py
