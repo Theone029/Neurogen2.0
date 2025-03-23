@@ -2,13 +2,11 @@
 """
 memory_store.py
 
-A robust MongoDB-backed memory storage module for NEUROGEN.
-This module handles structured memory entries with smart validation,
-automatic versioning, and optional tag injection using auto_tag.
+A MongoDB-backed memory storage module for NEUROGEN.
+Supports dual-mode invocation: as an imported module or via CLI (for scheduled tasks or Discord triggers).
 
-Supports dual-mode invocation: as an imported module or via CLI for testing.
 Usage:
-    python3 memory_store.py test
+    python3 memory_store.py test    # Run self-test stub
 """
 
 import sys
@@ -16,15 +14,6 @@ import os
 import datetime
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-
-# Import AutoTag for automatic tag injection.
-try:
-    from auto_tag import AutoTag
-except ImportError:
-    # Fallback dummy AutoTag if auto_tag.py is missing.
-    class AutoTag:
-        def generate_tags(self, text):
-            return []
 
 class MemoryStore:
     def __init__(self, mongo_uri=None, db_name="neurogen", collection_name="memory"):
@@ -40,20 +29,18 @@ class MemoryStore:
         self.client = MongoClient(mongo_uri)
         self.db = self.client[db_name]
         self.collection = self.db[collection_name]
-        self.auto_tagger = AutoTag()  # For automatic tag injection
-
-    def store_memory(self, content, tags=None, extra_fields=None, version=None):
+    
+    def store_memory(self, content, tags=None, extra_fields=None, source="user"):
         """
         Stores a memory entry with validation, versioning, and optional tag injection.
         Args:
             content (str): The memory content (non-empty string).
             tags (list): Optional list of tags. If None, auto-generates tags.
             extra_fields (dict): Additional fields to store.
-            version (int): Optional version number. Defaults to 1.
+            source (str): A string indicating the source of the memory (default "user").
         Returns:
             inserted_id: The ID of the stored memory.
         """
-        # Smart validation.
         if not isinstance(content, str) or not content.strip():
             raise ValueError("Content must be a non-empty string.")
         if tags is not None and not isinstance(tags, list):
@@ -61,21 +48,20 @@ class MemoryStore:
         if extra_fields is not None and not isinstance(extra_fields, dict):
             raise ValueError("Extra_fields must be a dictionary.")
 
-        # Auto-tag injection if tags are not provided.
         if tags is None:
-            tags = self.auto_tagger.generate_tags(content)
+            # Optionally, auto-generate tags if desired.
+            tags = []
 
-        if version is None:
-            version = 1
+        if extra_fields is None:
+            extra_fields = {}
 
         memory_doc = {
             "content": content,
             "tags": tags,
-            "version": version,
-            "created_at": datetime.datetime.utcnow()
+            "created_at": datetime.datetime.utcnow(),
+            "source": source
         }
-        if extra_fields:
-            memory_doc.update(extra_fields)
+        memory_doc.update(extra_fields)
         result = self.collection.insert_one(memory_doc)
         return result.inserted_id
 
@@ -142,7 +128,6 @@ class MemoryStore:
             set_ops["content"] = new_content
         if extra_fields:
             set_ops.update(extra_fields)
-        # Always update version.
         set_ops["version"] = new_version
 
         if set_ops:
@@ -191,7 +176,7 @@ class MemoryStore:
         cursor = self.collection.find({"created_at": {"$gte": start, "$lte": end}})
         return list(cursor)
 
-# Self-Test Stub
+# --- Self-Test Stub ---
 def test_memory_store():
     print("\n--- Running Self-Test for MemoryStore ---\n")
     
@@ -202,40 +187,40 @@ def test_memory_store():
     store.collection.delete_many({})
     print("Test collection cleared.")
 
-    # 1. Test: Store a new memory.
-    print("\n[TEST] Storing a new memory entry...")
-    memory_id = store.store_memory("This is a test memory entry for NEUROGEN.", extra_fields={"source": "unittest"})
+    # Test 1: Store a new memory with source parameter.
+    print("\n[TEST] Storing a new memory entry with source 'manual'...")
+    memory_id = store.store_memory("Test memory content for NEUROGEN.", tags=["test", "init"], source="manual")
     print(f"Memory stored with ID: {memory_id}")
 
-    # 2. Test: Retrieve the stored memory.
+    # Test 2: Retrieve the stored memory.
     print("\n[TEST] Retrieving the stored memory...")
     memory = store.get_memory(memory_id)
     print("Retrieved memory:", memory)
 
-    # 3. Test: Update the memory by changing content and adding a tag 'updated'.
+    # Test 3: Update the memory (modify content and add tag 'updated').
     print("\n[TEST] Updating memory: modifying content and adding tag 'updated'.")
-    update_result = store.update_memory(memory_id, new_content="Updated test memory entry.", add_tags=["updated"])
+    update_result = store.update_memory(memory_id, new_content="Updated test memory content.", add_tags=["updated"])
     if update_result:
         print(f"Update matched: {update_result.matched_count}, modified: {update_result.modified_count}")
     updated_memory = store.get_memory(memory_id)
     print("Updated memory:", updated_memory)
 
-    # 4. Test: Query memories by tag.
+    # Test 4: Query memories by tag 'updated'.
     print("\n[TEST] Querying memories with tag 'updated'...")
-    memories = store.query_memories_by_tag("updated")
-    print(f"Found {len(memories)} memory(ies) with tag 'updated'.")
+    memories_with_tag = store.query_memories_by_tag("updated")
+    print(f"Found {len(memories_with_tag)} memory(ies) with tag 'updated'.")
 
-    # 5. Test: Retrieve daily digest.
+    # Test 5: Retrieve daily digest.
     print("\n[TEST] Retrieving daily digest...")
     digest = store.get_daily_digest()
     print(f"Daily digest count: {len(digest)}")
 
-    # 6. Test: Delete the memory.
+    # Test 6: Delete the memory.
     print("\n[TEST] Deleting the memory entry...")
     delete_count = store.delete_memory(memory_id)
     print(f"Deleted memory count: {delete_count}")
     
-    # Final cleanup of test collection.
+    # Final cleanup.
     store.collection.delete_many({})
     print("\nSelf-Test completed.\n")
 
