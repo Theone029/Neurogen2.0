@@ -1,24 +1,32 @@
 #!/bin/bash
+set -euo pipefail
 
-# === AUTO BACKUP SCRIPT W/ COMMIT LOGGING ===
+# Directories to ensure are tracked even if empty
+DIRECTORIES=("logs" "core" "scripts" "data" "config")
 
-TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
-CHANGED=$(git status --porcelain)
-if [ -z "$CHANGED" ]; then
-  echo "⚠️  No changes to commit."
-  exit 0
+for dir in "\${DIRECTORIES[@]}"; do
+    if [ -d "\$dir" ]; then
+        if [ -z "\$(ls -A "\$dir")" ]; then
+            echo "Directory \$dir is empty, adding .gitkeep."
+            touch "\$dir/.gitkeep"
+        fi
+    fi
+done
+
+# Stage all changes
+git add .
+
+# Check if there are any changes to commit
+if git diff-index --quiet HEAD --; then
+    echo "No changes to commit."
+    exit 0
 fi
 
-# Commit message (manual override or default)
-MSG=${1:-"Auto Backup @ $TIMESTAMP"}
+# Use the provided commit message or a default timestamped message
+COMMIT_MSG=\${1:-"Auto Backup \$(date +'%Y-%m-%d %H:%M:%S')"}
+echo "Committing with message: \$COMMIT_MSG"
+git commit -m "\$COMMIT_MSG"
 
-echo "Committing with message: $MSG"
-git add .
-git commit -m "$MSG"
+# Push to the main branch
 git push origin main
-
-# Log it to logs/commits.md
-echo -e "\n## [$TIMESTAMP] $MSG\n" >> logs/commits.md
-git diff HEAD~1 --name-status >> logs/commits.md
-
-echo "✅ Auto-backup complete."
+echo "Auto-backup complete."

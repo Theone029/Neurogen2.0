@@ -61,3 +61,11 @@ R100	memory_store.py	core/memory_store.py
 M	core/memory_synthesizer.py
 M	logs/bot.log
 M	logs/commits.md
+
+## [2025-03-24 11:06:07] ✅ Restructured memory_store under core/, validated context injection + synth pipeline post-move
+
+M	core/__pycache__/__init__.cpython-310.pyc
+M	core/__pycache__/distill.cpython-310.pyc
+A	core/__pycache__/memory_store.cpython-310.pyc
+M	core/__pycache__/memory_synthesizer.cpython-310.pyc
+M	logs/commits.md
