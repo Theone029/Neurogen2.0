@@ -16,7 +16,7 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import datetime
-from memory_store import MemoryStore
+from core.memory_store import MemoryStore
 from memory_synthesizer import MemorySynthesizer
 from context_pipeline import build_context
 

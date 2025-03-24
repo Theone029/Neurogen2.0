@@ -40,3 +40,11 @@ M	memory_store.py
 
 A	core/memory_router.py
 M	logs/commits.md
+
+## [2025-03-23 22:32:55] □□□ Upgraded auto_tag.py for semantic tag matching; context pipeline now retrieves high-quality memories
+
+M	__pycache__/auto_tag.cpython-310.pyc
+M	auto_tag.py
+D	context_pipeline.py
+M	core/context_pipeline.py
+M	logs/commits.md

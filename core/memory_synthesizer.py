@@ -5,7 +5,7 @@ import datetime
 # Add the root directory to Python path so that modules in the root are importable.
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from memory_store import MemoryStore
+from core.memory_store import MemoryStore
 from auto_tag import generate_tags
 
 class MemorySynthesizer:

@@ -5,7 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import discord
 from discord.ext import commands
 from context_pipeline import build_context
-from memory_store import MemoryStore
+from core.memory_store import MemoryStore
 
 intents = discord.Intents.default()
 intents.message_content = True  # Required to read message content for commands

@@ -10,7 +10,7 @@ Generates a daily memory digest from MongoDB and stores it with a date-stamped t
 """
 
 import datetime
-from memory_store import MemoryStore
+from core.memory_store import MemoryStore
 
 def generate_digest(memories):
     # Summarize memory entries by joining key content and tags
