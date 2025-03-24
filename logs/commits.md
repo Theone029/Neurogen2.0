@@ -48,3 +48,16 @@ M	auto_tag.py
 D	context_pipeline.py
 M	core/context_pipeline.py
 M	logs/commits.md
+
+## [2025-03-24 11:01:32] Moved memory_store.py into core/ and updated import paths.
+
+A	core/__init__.py
+A	core/__pycache__/__init__.cpython-310.pyc
+M	core/__pycache__/context_pipeline.cpython-310.pyc
+M	core/bot.py
+M	core/digest_cron.py
+M	core/memory_router.py
+R100	memory_store.py	core/memory_store.py
+M	core/memory_synthesizer.py
+M	logs/bot.log
+M	logs/commits.md
