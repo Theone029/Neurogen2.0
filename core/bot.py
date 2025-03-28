@@ -1,30 +1,38 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import sys, os
+# Bootstrap: add the root directory so modules in the root are importable.
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import discord
 from discord.ext import commands
-from context_pipeline import build_context
+from context_injector import inject_context
 from core.memory_store import MemoryStore
 
 intents = discord.Intents.default()
-intents.message_content = True  # Required to read message content for commands
+intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 store = MemoryStore(collection_name="memories")
 
 @bot.command(name="ask")
-async def ask_command(ctx, *, query: str):
-    context = build_context(query)
-    combined_prompt = f"Context:\n{context}\n\nUser Query: {query}"
-    response = f"Simulated GPT Response based on prompt: {combined_prompt}"
-    store.store_memory(f"Query: {query}\nResponse: {response}", tags=["discord", "ask"])
-    await ctx.send(response)
+async def ask(ctx, *, query: str):
+    """
+    On !ask, retrieves context via context_injector,
+    stores the interaction, and simulates a GPT response.
+    """
+    injected_prompt = inject_context(query)
+    # Optionally store the query and a placeholder response in memory.
+    store.store_memory(f"Query: {query}\nResponse: <placeholder>", tags=["discord", "ask"], source="discord")
+    await ctx.send(f"Simulated GPT Response based on prompt:\n```Context:\n{injected_prompt}```")
 
 @bot.command(name="context")
-async def context_command(ctx, *, query: str):
-    context = build_context(query)
-    await ctx.send(f"Retrieved Context:\n{context}")
+async def context(ctx, *, query: str):
+    """
+    On !context, retrieves and displays the injected context.
+    """
+    injected_prompt = inject_context(query)
+    await ctx.send(f"Retrieved Context:\n```{injected_prompt}```")
 
 @bot.event
 async def on_ready():
