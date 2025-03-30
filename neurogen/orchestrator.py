@@ -6,6 +6,7 @@ Daemonized orchestrator for NEUROGEN that:
 - Executes the core_loop recursively at fixed intervals.
 - Logs each cycle's results to cycle_hud.md.
 - Triggers git autosync (via autopush.sh) on successful cycles.
+- Integrates live agent management: spawning, monitoring, and termination.
 """
 
 import os
@@ -21,17 +22,23 @@ import subprocess
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("Orchestrator")
 
+# Import core loop and Agent Manager.
 try:
     from neurogen.core_loop_test import core_loop
 except ImportError as e:
     logger.error("Failed to import core_loop: %s", e)
     exit(1)
 
-# Path to the cycle dashboard log
+try:
+    from neurogen.agent_manager import AgentManager
+except ImportError as e:
+    logger.error("Failed to import AgentManager: %s", e)
+    exit(1)
+
+# Path to the cycle dashboard log.
 CYCLE_HUD_PATH = "cycle_hud.md"
 
 def log_cycle(result):
-    """Append the cycle output to cycle_hud.md."""
     timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
     with open(CYCLE_HUD_PATH, "a") as f:
         f.write(f"## Cycle at {timestamp}\n")
@@ -41,7 +48,6 @@ def log_cycle(result):
     logger.info("Cycle logged to %s", CYCLE_HUD_PATH)
 
 def git_autopush():
-    """Call the autopush.sh script to commit and push changes."""
     try:
         subprocess.check_call(["./autopush.sh"])
         logger.info("Git autopush executed successfully.")
@@ -49,27 +55,38 @@ def git_autopush():
         logger.error("Git autopush failed: %s", e)
 
 def main_loop():
-    # Set the cycle interval (in seconds, e.g., 300 sec = 5 minutes)
+    # Set the cycle interval (in seconds).
     cycle_interval = 300
     logger.info("NEUROGEN Orchestrator started. Cycle interval: %d seconds.", cycle_interval)
+    
+    # Initialize Agent Manager and spawn initial agents.
+    agent_manager = AgentManager()
+    agent_manager.spawn_initial_agents()
+    
     while True:
         logger.info("Starting new recursive cycle...")
-        # Prepare system state (replace with real state as needed)
+        # Prepare system state.
         state = {
             "output": "Engagement was low due to poor personalization.",
             "belief": "All clients should be sent the same message.",
             "query": "How to increase lead response rate?"
         }
-        # Run the core recursive loop
+        # Run the core recursive loop.
         result = core_loop(state)
-        # Log the cycle results
         log_cycle(result)
-        # If cycle succeeded, trigger git autosync
+        
+        # Run agent management tasks: update and terminate agents.
+        agent_manager.monitor_agents()
+        agent_manager.terminate_underperformers()
+        active_agents = agent_manager.registry.get_active_agents()
+        logger.info("Active agents count: %d", len(active_agents))
+        
         if result.get("success", False):
             logger.info("Cycle passed. Triggering git autopush...")
             git_autopush()
         else:
             logger.error("Cycle failed. Skipping git push.")
+        
         logger.info("Cycle complete. Sleeping for %d seconds...", cycle_interval)
         time.sleep(cycle_interval)
 
