@@ -26,3 +26,4 @@ neurogen/
 ├── requirements.txt           ← Lean, mean, and dependency-clean—no bloat here
 └── .gitignore                 ← Keeps your repo pristine by blocking clutter
 # NEUROGEN 2.0
+# NeuroFusion
